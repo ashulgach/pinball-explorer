@@ -1,0 +1,13 @@
+{
+  "name": "pinball-explorer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "balena-image-fs": "^7.6.1",
+    "partitioninfo": "^6.0.3"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "assets": {
+    "/venom_le/assets/lcd/auto_loaded/03a5fe26fc067d3fd8b990095a4615de1ee1c827/scene.radium": {
+      "alias": "Video Mode HUD",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/1efcd4faac3f1c04bd100debe1e9b33faca543f1/07b74ddffb621f497197e125791ce8740701ad0c/scene.radium": {
+      "alias": "Flipper Time HUD",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/1efcd4faac3f1c04bd100debe1e9b33faca543f1/2a97996816e644f70f4a16ea441f70aa21f36aca/scene.radium": {
+      "alias": "Player Score HUD",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/1efcd4faac3f1c04bd100debe1e9b33faca543f1/553a7dc3991771589cf68195d5a5dd276fc23aee/scene.radium": {
+      "alias": "Speed Run HUD",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/1efcd4faac3f1c04bd100debe1e9b33faca543f1/5e4d73473272942305af12a8792e4206be00400a/scene.radium": {
+      "alias": "Overview HUD",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/1efcd4faac3f1c04bd100debe1e9b33faca543f1/90d123416750834005ecd91a6398f3394e62b026/scene.radium": {
+      "alias": "Host Selection",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/1efcd4faac3f1c04bd100debe1e9b33faca543f1/bb9325652109ad31a16aadea355217486e06288f/scene.radium": {
+      "alias": "Team Scoring HUD",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/1efcd4faac3f1c04bd100debe1e9b33faca543f1/c35687bd92c2dfb437267175df65fdb518c540d5/scene.radium": {
+      "alias": "Team Up HUD",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/33f656a5a1fda17c0d7dd08dc49815742ce1da51/scene.radium": {
+      "alias": "Video Mode End Score",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/394c4a037fb26e12f536c42b2677bfed831f5c98/scene.radium": {
+      "alias": "Attract Mode HUD",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/60ed7e5036b8ce09d35a3e101ea6fc1380b37d97/scene.assets/2.asset/139.asset": {
+      "alias": "knull_fall",
+      "description": ""
+    },
+    "/venom_le/assets/lcd/auto_loaded/60ed7e5036b8ce09d35a3e101ea6fc1380b37d97/scene.assets/2.asset/177.asset": {
+      "alias": "level up gwen",
+      "description": ""
+    },
+    "radium-node::/venom_le/assets/lcd/auto_loaded/1efcd4faac3f1c04bd100debe1e9b33faca543f1/5e4d73473272942305af12a8792e4206be00400a/scene.radium::blob_eba488cd2b": {
+      "alias": "Life Counter",
+      "description": ""
+    }
+  }
+}

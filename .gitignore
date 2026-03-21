@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+.cache/
+.tools/
+# Node dependencies
+**/node_modules/
+
+# Local package manager noise
+npm-debug.log*
+
+# Large local firmware / image inputs
+*.raw
+*.img
+*.iso
+*.spk
+*.spk/
