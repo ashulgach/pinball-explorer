@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pinball Explorer</title>
-    <link rel="stylesheet" href="/styles.css">
+    <script type="module" crossorigin src="/assets/index-CxhQ1db6.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-B3mUrBNq.css">
   </head>
   <body>
     <div class="app-shell">
@@ -45,6 +46,10 @@
             <span class="tab-count" id="tabCountGraph">0</span>
           </button>
         </nav>
+        <label class="topbar-share" id="topbarShare" title="Share your asset names and descriptions with the community">
+          <input type="checkbox" id="communityShareToggle">
+          <span class="topbar-share-label">Share with community</span>
+        </label>
         <div class="topbar-file" id="topbarFile">
           <span class="topbar-file-label" id="topbarFileLabel">No file loaded</span>
           <button class="topbar-load-button" id="topbarLoadNew" type="button">Load new&hellip;</button>
@@ -93,12 +98,6 @@
             <div class="viewer-toolbar-meta">
               <span class="viewer-file" id="viewerSelectionName">No target loaded</span>
             </div>
-            <button class="inspector-toggle" id="inspectorToggle" type="button" aria-label="Toggle info panel" title="Toggle info panel">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                <text x="8" y="12" text-anchor="middle" fill="currentColor" font-size="11" font-weight="700" font-family="system-ui, sans-serif">i</text>
-              </svg>
-            </button>
           </section>
           <div class="viewer" id="viewer"></div>
 
@@ -113,8 +112,6 @@
 
         <aside class="inspector">
           <section class="rail-section" id="selectionInspector"></section>
-          <section class="rail-section" id="packageInspector"></section>
-          <section class="rail-section" id="manifestInspector"></section>
         </aside>
       </section>
 
@@ -122,6 +119,7 @@
     </div>
 
     <input id="targetPath" type="hidden" aria-hidden="true">
+    <input id="imageFileInput" class="visually-hidden-file-input" type="file" accept=".raw,.img,.iso,.bin,.dd,.image">
 
     <div class="crop-modal-backdrop" id="cropModalBackdrop" hidden>
       <div class="crop-modal">
@@ -140,7 +138,5 @@
       </div>
     </div>
 
-    <script src="/radium-player.js"></script>
-    <script type="module" src="/app.js"></script>
   </body>
 </html>

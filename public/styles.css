@@ -265,6 +265,18 @@ button {
   background: rgba(250, 204, 21, 0.18);
 }
 
+/* Drag-and-drop visual feedback (Electron) */
+body.drag-over::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  border: 3px dashed var(--accent, #facc15);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 9999;
+  background: rgba(250, 204, 21, 0.05);
+}
+
 
 input,
 select,
@@ -305,6 +317,11 @@ textarea:focus {
   height: 100%;
   display: grid;
   grid-template-columns: var(--sidebar-width) var(--sidebar-resizer-width) minmax(0, 1fr) 280px;
+  transition: grid-template-columns 250ms ease;
+}
+
+.workspace.inspector-hidden {
+  grid-template-columns: var(--sidebar-width) var(--sidebar-resizer-width) minmax(0, 1fr) 0px;
 }
 
 .sidebar,
@@ -385,6 +402,42 @@ textarea:focus {
 .inspector {
   border-left: 1px solid var(--line);
   overflow: auto;
+  transition: opacity 250ms ease, border-color 250ms ease;
+}
+
+.inspector-hidden .inspector {
+  overflow: hidden;
+  opacity: 0;
+  border-left-color: transparent;
+  pointer-events: none;
+}
+
+.inspector-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.inspector-toggle:hover {
+  color: var(--text);
+  border-color: var(--muted);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.inspector-toggle.is-active {
+  color: var(--accent, #facc15);
+  border-color: var(--accent, #facc15);
 }
 
 .viewer-shell {
@@ -715,6 +768,20 @@ textarea:focus {
   margin-bottom: 16px;
 }
 
+.preview-stage.preview-stage-seamless .preview-surface {
+  min-height: 0;
+  max-height: calc(100vh - 250px);
+}
+
+.preview-stage.preview-stage-seamless .preview-image {
+  max-height: calc(100vh - 300px);
+}
+
+.preview-stage.preview-stage-seamless .preview-surface-video {
+  height: calc(100vh - 250px);
+  min-height: 200px;
+}
+
 .preview-stage.preview-stage-seamless .radium-player-container {
   padding: 0;
 }
@@ -725,6 +792,11 @@ textarea:focus {
   justify-content: space-between;
   gap: 18px;
   margin-bottom: 22px;
+}
+
+.preview-header-main {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .preview-header-actions {
@@ -750,37 +822,52 @@ textarea:focus {
 }
 
 .preview-header h2 {
-  font-size: clamp(28px, 4vw, 52px);
-  line-height: 0.96;
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1;
   max-width: 12ch;
 }
 
+.preview-header-main h2 {
+  max-width: none;
+}
+
 .preview-title-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  display: block;
   max-width: 100%;
   cursor: pointer;
 }
 
 .preview-title-row h2 {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.preview-title-text {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .preview-title-edit-form {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  max-width: min(100%, 720px);
+  max-width: 100%;
 }
 
 .preview-title-input {
-  height: 54px;
-  min-width: min(100%, 420px);
+  height: 48px;
+  min-width: 0;
+  flex: 1 1 auto;
   padding: 0 16px;
   font-family: var(--display);
-  font-size: clamp(28px, 4vw, 52px);
-  line-height: 0.96;
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1;
 }
 
 .asset-edit-button {
@@ -805,6 +892,11 @@ textarea:focus {
 .asset-edit-button.asset-edit-button-compact {
   width: 28px;
   height: 28px;
+}
+
+.asset-edit-button.asset-edit-button-inline {
+  display: inline-flex;
+  vertical-align: middle;
 }
 
 .asset-edit-button.asset-edit-button-compact svg {
@@ -1754,8 +1846,19 @@ a {
 }
 
 @media (max-width: 1180px) {
-  .workspace {
+  .workspace,
+  .workspace.inspector-hidden {
     grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .inspector-toggle {
+    display: none;
+  }
+
+  .inspector-hidden .inspector {
+    overflow: auto;
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .sidebar-resizer {

@@ -216,6 +216,8 @@ async function inspectTargetPath(targetPath, { preserveSelection = false } = {})
       throw new Error(data.error || 'Inspect failed');
     }
     state.currentData = data;
+    // Remember last successfully loaded target for next session.
+    try { localStorage.setItem(LAST_TARGET_KEY, targetPath); } catch {}
     if (previousAssetPath && data.spike?.assetFiles?.some((asset) => asset.path === previousAssetPath)) {
       state.selectedAssetPath = previousAssetPath;
     }
@@ -240,15 +242,68 @@ async function inspectTargetPath(targetPath, { preserveSelection = false } = {})
 // --- Native file picker ---
 
 async function pickAndLoadFile() {
-  const res = await fetch('/api/pick-file');
-  const data = await res.json();
-  if (!data.path) return;
-  targetInput.value = data.path;
-  await inspectTargetPath(data.path);
+  let filePath;
+  if (window.electronAPI?.pickFile) {
+    filePath = await window.electronAPI.pickFile();
+  } else {
+    const res = await fetch('/api/pick-file');
+    const data = await res.json();
+    filePath = data.path;
+  }
+  if (!filePath) return;
+  targetInput.value = filePath;
+  await inspectTargetPath(filePath);
 }
 
 loadOverlayButton.addEventListener('click', () => void pickAndLoadFile());
 topbarLoadNew.addEventListener('click', () => void pickAndLoadFile());
+
+// --- Drag-and-drop support ---
+
+document.body.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  document.body.classList.add('drag-over');
+});
+
+document.body.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  document.body.classList.remove('drag-over');
+});
+
+document.body.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  document.body.classList.remove('drag-over');
+  const file = e.dataTransfer?.files?.[0];
+  // In Electron, File objects have a .path property with the full native path.
+  // In a regular browser this is undefined, so drag-and-drop gracefully no-ops.
+  const filePath = file?.path;
+  if (!filePath) return;
+  targetInput.value = filePath;
+  await inspectTargetPath(filePath);
+});
+
+// --- Inspector toggle ---
+
+const inspectorToggle = document.getElementById('inspectorToggle');
+const workspace = document.querySelector('.workspace');
+const INSPECTOR_HIDDEN_KEY = 'pinball-explorer.inspector-hidden';
+
+function applyInspectorState(hidden) {
+  workspace.classList.toggle('inspector-hidden', hidden);
+  inspectorToggle.classList.toggle('is-active', !hidden);
+}
+
+// Hidden by default
+applyInspectorState(localStorage.getItem(INSPECTOR_HIDDEN_KEY) !== 'false');
+
+inspectorToggle.addEventListener('click', () => {
+  const nowHidden = !workspace.classList.contains('inspector-hidden');
+  applyInspectorState(nowHidden);
+  localStorage.setItem(INSPECTOR_HIDDEN_KEY, nowHidden ? 'true' : 'false');
+});
 
 // --- Sidebar resizer ---
 
@@ -811,14 +866,18 @@ sceneTypeFilter.addEventListener('change', () => {
 
 // --- Initialization ---
 
+const LAST_TARGET_KEY = 'pinball-explorer.last-target';
+
 async function init() {
   initSound();
   initCropModal();
   applySidebarWidth(getSidebarWidth());
   wireSidebarResizer();
+
+  // Determine which image to load: server default, then localStorage fallback.
   const res = await fetch('/api/default-target');
   const data = await res.json();
-  targetInput.value = data.defaultTarget || '';
+  targetInput.value = data.defaultTarget || localStorage.getItem(LAST_TARGET_KEY) || '';
   if (targetInput.value) {
     await inspectTargetPath(targetInput.value);
     return;

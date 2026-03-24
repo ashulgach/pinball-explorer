@@ -249,18 +249,20 @@ export function renderEditableAssetTitle(asset, fallbackText) {
 
   return `
     <div class="preview-title-row" data-edit-asset-metadata="${escapeHtml(asset.path)}" title="Double-click to edit name">
-      <h2>${title}</h2>
-      <button
-        class="asset-edit-button"
-        type="button"
-        data-edit-asset-metadata="${escapeHtml(asset.path)}"
-        aria-label="Edit asset name"
-        title="Edit asset name"
-      >
-        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-          <path d="M11.8 1.8a1.7 1.7 0 0 1 2.4 2.4l-7.9 7.9-3.6.8.8-3.6 7.9-7.9Zm1.4 1-1.4-1.4a.5.5 0 0 0-.7 0L10 2.5l2.1 2.1 1.1-1.1a.5.5 0 0 0 0-.7ZM11.3 5.3 9.2 3.2 4 8.4l-.5 2 2-.5 5.8-5.8Z" fill="currentColor"></path>
-        </svg>
-      </button>
+      <h2>
+        <span class="preview-title-text">${title}</span>
+        <button
+          class="asset-edit-button asset-edit-button-inline"
+          type="button"
+          data-edit-asset-metadata="${escapeHtml(asset.path)}"
+          aria-label="Edit asset name"
+          title="Edit asset name"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path d="M11.8 1.8a1.7 1.7 0 0 1 2.4 2.4l-7.9 7.9-3.6.8.8-3.6 7.9-7.9Zm1.4 1-1.4-1.4a.5.5 0 0 0-.7 0L10 2.5l2.1 2.1 1.1-1.1a.5.5 0 0 0 0-.7ZM11.3 5.3 9.2 3.2 4 8.4l-.5 2 2-.5 5.8-5.8Z" fill="currentColor"></path>
+          </svg>
+        </button>
+      </h2>
     </div>
   `;
 }
@@ -491,7 +493,7 @@ function renderAssetsView() {
     <div class="viewer-stack">
       <section class="preview-stage preview-stage-seamless">
         <div class="preview-header">
-          <div>
+          <div class="preview-header-main">
             ${renderEditableAssetTitle(asset, 'Select an asset')}
           </div>
           ${renderAssetHeaderActions(asset)}
@@ -511,7 +513,7 @@ function renderSummaryView() {
     <div class="viewer-stack">
       <section class="preview-stage">
         <div class="preview-header">
-          <div>
+          <div class="preview-header-main">
             <h2>${escapeHtml(pathBasename(state.currentData.resolvedPath || state.currentData.targetPath || 'No target'))}</h2>
           </div>
         </div>

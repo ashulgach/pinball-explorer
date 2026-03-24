@@ -723,7 +723,7 @@ export function renderScenesView() {
     <div class="viewer-stack">
       <section class="preview-stage preview-stage-seamless">
         <div class="preview-header">
-          <div>
+          <div class="preview-header-main">
             ${renderEditableAssetTitle(selected, 'Radium scenes')}
           </div>
           ${renderSceneHeaderActions(selected)}

@@ -14,16 +14,23 @@ import {
 import { replaceNativeSpikeSoundScript } from './lib/spike-sound-native.js';
 import { LRUCache } from './lib/lru-cache.js';
 
-const root = path.dirname(fileURLToPath(import.meta.url));
-const publicDir = path.join(root, 'public');
-const workerPath = path.join(root, 'lib', 'raw-image-worker.js');
-const assetMetadataPath = path.join(root, 'data', 'asset-metadata.json');
-const cacheRoot = path.join(root, '.cache');
-const soundCacheDir = path.join(cacheRoot, 'sound-cache');
-const soundUploadDir = path.join(cacheRoot, 'sound-uploads');
-const videoUploadDir = path.join(cacheRoot, 'video-uploads');
-const imageUploadDir = path.join(cacheRoot, 'image-uploads');
-const defaultTarget = '';
+const selfRoot = path.dirname(fileURLToPath(import.meta.url));
+
+// When running inside Electron, process.execPath is the Electron binary.
+// ELECTRON_RUN_AS_NODE makes it behave as plain Node.js for worker spawns.
+const workerEnv = { ...process.env, ELECTRON_RUN_AS_NODE: '1' };
+
+// These are re-assigned by startServer() when running inside Electron.
+let root = selfRoot;
+let publicDir = path.join(root, 'public');
+let workerPath = path.join(root, 'lib', 'raw-image-worker.js');
+let assetMetadataPath = path.join(root, 'data', 'asset-metadata.json');
+let cacheRoot = path.join(root, '.cache');
+let soundCacheDir = path.join(cacheRoot, 'sound-cache');
+let soundUploadDir = path.join(cacheRoot, 'sound-uploads');
+let videoUploadDir = path.join(cacheRoot, 'video-uploads');
+let imageUploadDir = path.join(cacheRoot, 'image-uploads');
+let defaultTarget = '';
 const inspectCache = new Map();
 const inspectInflight = new Map();
 const graphCache = new Map();
@@ -203,6 +210,7 @@ function runRawImageWorker(args) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [workerPath, ...args], {
       cwd: root,
+      env: workerEnv,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     const stdout = [];
@@ -227,6 +235,7 @@ function runRawImageWorkerBuffer(args) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [workerPath, ...args], {
       cwd: root,
+      env: workerEnv,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     const stdout = [];
@@ -479,6 +488,7 @@ async function spawnAssetWorker(target, assetPath, start, end, res) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [workerPath, 'cat', target, assetPath, String(start), String(end)], {
       cwd: root,
+      env: workerEnv,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 
@@ -517,6 +527,7 @@ async function spawnSceneFrameWorker(target, scenePath, assetPath, res) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [workerPath, 'scene-frame', target, scenePath, assetPath], {
       cwd: root,
+      env: workerEnv,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 
@@ -672,7 +683,39 @@ async function streamRequestToFile(req, filePath) {
   });
 }
 
-const server = http.createServer(async (req, res) => {
+// ---------------------------------------------------------------------------
+// Exported entry point for Electron embedding.
+// ---------------------------------------------------------------------------
+
+export function startServer({ appRoot, dataRoot, port: requestedPort = 4274 } = {}) {
+  if (appRoot) {
+    root = appRoot;
+    // In a packaged Electron app, worker scripts live outside the ASAR.
+    const codeRoot = appRoot.replace('app.asar', 'app.asar.unpacked');
+    publicDir = path.join(appRoot, 'public');
+    workerPath = path.join(codeRoot, 'lib', 'raw-image-worker.js');
+  }
+  if (dataRoot) {
+    assetMetadataPath = path.join(dataRoot, 'asset-metadata.json');
+    cacheRoot = path.join(dataRoot, '.cache');
+    soundCacheDir = path.join(cacheRoot, 'sound-cache');
+    soundUploadDir = path.join(cacheRoot, 'sound-uploads');
+    videoUploadDir = path.join(cacheRoot, 'video-uploads');
+    imageUploadDir = path.join(cacheRoot, 'image-uploads');
+  }
+
+  return new Promise((resolve) => {
+    const server = _createServer();
+    server.listen(requestedPort, '127.0.0.1', () => {
+      const port = server.address().port;
+      console.log(`Pinball Explorer listening on http://127.0.0.1:${port}`);
+      resolve({ server, port });
+    });
+  });
+}
+
+function _createServer() {
+  return http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
 
   if (url.pathname === '/api/pick-file' && req.method === 'GET') {
@@ -1041,9 +1084,17 @@ const server = http.createServer(async (req, res) => {
   }
 
   await serveStatic(res, url.pathname);
-});
+  });
+}
 
-const port = Number(process.env.PORT || 4274);
-server.listen(port, () => {
-  console.log(`Pinball Explorer listening on http://localhost:${port}`);
-});
+// ---------------------------------------------------------------------------
+// Standalone mode (node server.js)
+// ---------------------------------------------------------------------------
+
+const isMain = process.argv[1] &&
+  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+
+if (isMain) {
+  defaultTarget = '/Users/alex/Downloads/pinball/PinballBrowser852/venom_le-0_97_0.Release.8G.sdcard.raw';
+  startServer({ port: Number(process.env.PORT || 4274) });
+}
