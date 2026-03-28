@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pinball Explorer — Web</title>
+    <script type="module" crossorigin src="/assets/index-CSg5cCJg.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-B46TLomp.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div class="brand-copy">
+            <p class="brand-kicker">RAW IMAGE WORKBENCH</p>
+            <p class="brand-name">Pinball Explorer</p>
+          </div>
+        </div>
+        <nav class="main-tabs" id="mainTabs" aria-label="Primary views">
+          <button class="tab is-active" type="button" data-view="all-files">
+            <span class="tab-label">All Files</span>
+          </button>
+          <button class="tab" type="button" data-view="fonts">
+            <span class="tab-label">Fonts</span>
+            <span class="tab-count" id="tabCountFonts">0</span>
+          </button>
+          <button class="tab" type="button" data-view="images">
+            <span class="tab-label">Images</span>
+            <span class="tab-count" id="tabCountImages">0</span>
+          </button>
+          <button class="tab" type="button" data-view="scenes">
+            <span class="tab-label">Radium Scenes</span>
+            <span class="tab-count" id="tabCountScenes">0</span>
+          </button>
+          <button class="tab" type="button" data-view="audio">
+            <span class="tab-label">Audio</span>
+            <span class="tab-count" id="tabCountAudio">0</span>
+          </button>
+          <button class="tab" type="button" data-view="videos">
+            <span class="tab-label">Videos</span>
+            <span class="tab-count" id="tabCountVideos">0</span>
+          </button>
+          <button class="tab" type="button" data-view="graph">
+            <span class="tab-label">Rule Graph</span>
+            <span class="tab-count" id="tabCountGraph">0</span>
+          </button>
+        </nav>
+        <div class="topbar-file" id="topbarFile">
+          <span class="topbar-file-label" id="topbarFileLabel">No file loaded</span>
+          <button class="topbar-load-button" id="topbarLoadNew" type="button">Load new&hellip;</button>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <aside class="sidebar">
+          <section class="rail-section" id="sidebarFilters">
+            <div class="section-head">
+              <h2>Filters</h2>
+            </div>
+            <label class="field-label" for="assetSearch">Asset search</label>
+            <input id="assetSearch" type="text" spellcheck="false" placeholder="png, radium, scene.assets">
+            <div class="control-row">
+              <label class="checkline">
+                <input id="viewableOnly" type="checkbox">
+                <span>Viewable only</span>
+              </label>
+            </div>
+            <label class="field-label" for="sceneTypeFilter">Scene type</label>
+            <select id="sceneTypeFilter">
+              <option value="">All scene types</option>
+            </select>
+          </section>
+          <section class="rail-section rail-list">
+            <div class="section-head">
+              <h2 id="assetListHeading">Asset index</h2>
+            </div>
+            <div class="asset-list" id="assetList"></div>
+          </section>
+        </aside>
+
+        <div
+          class="sidebar-resizer"
+          id="sidebarResizer"
+          role="separator"
+          aria-label="Resize file list"
+          aria-orientation="vertical"
+          tabindex="0"
+        ></div>
+
+        <main class="viewer-shell">
+          <section class="viewer-toolbar">
+            <div class="viewer-toolbar-meta">
+              <span class="viewer-file" id="viewerSelectionName">No target loaded</span>
+            </div>
+            <button class="inspector-toggle" id="inspectorToggle" type="button" aria-label="Toggle info panel" title="Toggle info panel">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <text x="8" y="12" text-anchor="middle" fill="currentColor" font-size="11" font-weight="700" font-family="system-ui, sans-serif">i</text>
+              </svg>
+            </button>
+          </section>
+          <div class="viewer" id="viewer"></div>
+
+          <div class="load-overlay" id="loadOverlay">
+            <div class="load-overlay-content">
+              <p class="load-overlay-heading">No file loaded</p>
+              <p class="load-overlay-sub">Open a raw SD card image to get started.</p>
+              <button class="load-overlay-button" id="loadOverlayButton" type="button">Load&hellip;</button>
+            </div>
+          </div>
+        </main>
+
+        <aside class="inspector">
+          <section class="rail-section" id="selectionInspector"></section>
+          <section class="rail-section" id="packageInspector"></section>
+          <section class="rail-section" id="manifestInspector"></section>
+        </aside>
+      </section>
+
+      <footer class="statusbar" id="statusbar"></footer>
+    </div>
+
+    <input id="targetPath" type="hidden" aria-hidden="true">
+    <!-- Hidden file input for web mode -->
+    <input id="webFileInput" type="file" accept=".raw,.img,.iso" style="display:none">
+
+    <div class="crop-modal-backdrop" id="cropModalBackdrop" hidden>
+      <div class="crop-modal">
+        <div class="crop-modal-header">
+          <h3>Crop &amp; Resize Image</h3>
+          <button class="crop-modal-close" id="cropModalClose" type="button" aria-label="Close">&times;</button>
+        </div>
+        <p class="crop-modal-info" id="cropModalInfo"></p>
+        <div class="crop-modal-canvas-wrap" id="cropModalCanvasWrap">
+          <canvas id="cropModalCanvas"></canvas>
+        </div>
+        <div class="crop-modal-footer">
+          <button class="crop-modal-btn crop-modal-btn-cancel" id="cropModalCancel" type="button">Cancel</button>
+          <button class="crop-modal-btn crop-modal-btn-confirm" id="cropModalConfirm" type="button">Crop &amp; Replace</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/public/radium-player.js"></script>
+  </body>
+</html>

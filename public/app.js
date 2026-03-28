@@ -241,7 +241,16 @@ async function inspectTargetPath(targetPath, { preserveSelection = false } = {})
 
 // --- Native file picker ---
 
+const isWebMode = !window.electronAPI && typeof window.__pinballWebFileInput !== 'undefined';
+
 async function pickAndLoadFile() {
+  if (isWebMode) {
+    // In web mode, trigger the hidden file input
+    const fileInput = document.getElementById('webFileInput');
+    if (fileInput) fileInput.click();
+    return;
+  }
+
   let filePath;
   if (window.electronAPI?.pickFile) {
     filePath = await window.electronAPI.pickFile();
@@ -277,9 +286,18 @@ document.body.addEventListener('drop', async (e) => {
   e.stopPropagation();
   document.body.classList.remove('drag-over');
   const file = e.dataTransfer?.files?.[0];
+  if (!file) return;
+
+  if (isWebMode) {
+    // In web mode, use File object directly — the fetch interceptor handles the rest.
+    window.__pinballWebSetFile?.(file);
+    targetInput.value = file.name;
+    await inspectTargetPath(file.name);
+    return;
+  }
+
   // In Electron, File objects have a .path property with the full native path.
-  // In a regular browser this is undefined, so drag-and-drop gracefully no-ops.
-  const filePath = file?.path;
+  const filePath = file.path;
   if (!filePath) return;
   targetInput.value = filePath;
   await inspectTargetPath(filePath);
@@ -873,6 +891,22 @@ async function init() {
   initCropModal();
   applySidebarWidth(getSidebarWidth());
   wireSidebarResizer();
+
+  if (isWebMode) {
+    // Web mode: set up file input listener for loading files
+    const fileInput = document.getElementById('webFileInput');
+    if (fileInput) {
+      fileInput.addEventListener('change', async () => {
+        const file = fileInput.files?.[0];
+        if (!file) return;
+        window.__pinballWebSetFile?.(file);
+        targetInput.value = file.name;
+        await inspectTargetPath(file.name);
+      });
+    }
+    renderAll();
+    return;
+  }
 
   // Determine which image to load: server default, then localStorage fallback.
   const res = await fetch('/api/default-target');
