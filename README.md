@@ -1,21 +1,35 @@
 # Pinball Explorer
 
-Standalone web app for browsing raw pinball SD card images.
+Browse and inspect raw pinball machine SD card images.
 
-## Run
+## Quick Start
 
 ```bash
 npm install
 npm start
 ```
 
-Default URL:
+Opens at `http://localhost:4274`.
 
-- `http://localhost:4274`
+## Electron
 
-## Notes
+```bash
+npm run electron:dev        # dev mode
+npm run electron:build:mac  # build for macOS
+npm run electron:build:win  # build for Windows
+npm run electron:build:linux
+```
 
-- The app is self-contained under `pinball-explorer/`.
-- The server and worker processes read mounted raw SD images directly.
-- Asset aliases and descriptions persist to `pinball-explorer/data/asset-metadata.json`.
-- The frontend is plain HTML, CSS, and browser-side JavaScript with no build step.
+## Web (Vite)
+
+```bash
+npm run web:dev      # dev server
+npm run web:build    # production build
+npm run web:preview  # preview build
+```
+
+## How It Works
+
+- Reads mounted raw SD card images directly via a worker process
+- Parses Stern Spike platform assets (images, sounds, rules)
+- Asset aliases and descriptions persist to `data/asset-metadata.json`
