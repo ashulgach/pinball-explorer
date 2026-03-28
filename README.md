@@ -1,6 +1,6 @@
 # Pinball Explorer
 
-Browse and inspect raw pinball machine SD card images.
+Browse and inspect raw Stern Spike 2 SD card images.
 
 ## Quick Start
 
